@@ -12,8 +12,8 @@
   position: absolute;
   bottom: 60px;
   right: 0;
-  width: 35rem;
-  min-height: 44rem;
+  width: 30rem;
+  min-height: 60vh;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -46,7 +46,7 @@
 
 .chatBody {
   padding: 10px;
-  height: 37rem;
+  height: 65vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -425,7 +425,7 @@ textarea::placeholder {
 @media (max-width: 1024px) {
   .chatWindow {
     width: 30rem;
-    min-height: 35rem;
+    /* min-height: 35rem; */
   }
 
   .chatInputContainer {
@@ -444,8 +444,8 @@ textarea::placeholder {
 
 @media (max-width: 768px) {
   .chatWindow {
-    width: 25rem;
-    min-height: 35rem;
+    width: 30rem;
+   
     right: 5%;
   }
 
@@ -474,8 +474,8 @@ textarea::placeholder {
 
 @media (max-width: 480px) {
   .chatWindow {
-    width: 19rem;
-    min-height: 30rem;
+    width: 21rem;
+  
     right: 0;
     bottom: 0;
   }
@@ -493,15 +493,23 @@ textarea::placeholder {
     height: 40px;
     padding: 10px;
   }
+  .closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+  }
 
+  .closeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+  }
   .sendButton {
     width: 32px;
     height: 32px;
     font-size: 14px;
-  }
-}
-@media (max-height: 800px) {
-  .chatWindow {
-    min-height: 28rem;
   }
 }
