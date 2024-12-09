@@ -1,0 +1,507 @@
+.chatbotContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.chatWindow {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 35rem;
+  min-height: 44rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.chatHeader {
+  background-color: #1e4d43;
+  color: white;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+}
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+.chatBody {
+  padding: 10px;
+  height: 37rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatBubble {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+.chatInputContainer {
+  display: flex;
+  padding: 2px 10px;
+  border-top: 1px solid #e0e8e7;
+  background-color: #f7f7f3;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f7f7f3;
+  font-size: 16px;
+}
+
+.chatInput:focus {
+  outline: none;
+}
+
+.chatbotContainer.open .chatWindow {
+  display: block;
+}
+
+.chatbotContainer .chatWindow {
+  display: none;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.headerContent {
+  flex-grow: 1;
+}
+
+.chatTitle {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+}
+
+.chatSubtitle {
+  font-size: 14px;
+  color: #e0e8e7;
+  display: flex;
+  justify-content: center;
+}
+
+.messageIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.messageText {
+  max-width: 80%;
+  word-wrap: break-word;
+  line-height: 1.4;
+  padding: 8px;
+  font-size: 16px;
+}
+.messageText.user {
+  background-color: #58b423;
+  color: white;
+  border-radius: 8px;
+}
+.messageText.bot {
+  background-color: #efeee7;
+  color: #1e4d43;
+  border-radius: 8px;
+  margin-left: 5px;
+}
+
+.chatBubble.bot {
+  align-self: flex-start;
+  flex-direction: row;
+}
+
+.chatBubble.user {
+  align-self: flex-end;
+
+  flex-direction: row-reverse;
+}
+
+.messageIconContainer.bot {
+  order: 1;
+}
+
+.sendButton {
+  background-color: #1e4d43;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  width: 40px;
+  height: 40px;
+}
+
+.sendButton:hover {
+  background-color: #58b423;
+}
+
+.sendArrowIcon {
+  color: white;
+  font-size: 18px;
+}
+
+.chatButton {
+  background-color: #1e4d43;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+.chatButton:hover {
+  background-color: #18473c;
+}
+
+.iconStyle {
+  font-size: 20px;
+}
+
+.fileUpload {
+  display: flex;
+  align-items: end;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.fileUploadIcon {
+  color: #1e4d43;
+  font-size: 18px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f7f7f3;
+  font-size: 16px;
+  outline: none;
+}
+
+.starterMessages {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 80%;
+  margin-bottom: 15px;
+  margin-left: 2.7rem;
+}
+
+.starterMessages p {
+  font-size: 16px;
+  color: #1e4d43;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.starterMessage {
+  background-color: #efeee7;
+  color: #1e4d43;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  width: -webkit-fill-available;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.starterMessage:hover {
+  background-color: #e0e8e7;
+}
+
+.messageText.bot p {
+  margin: 0;
+  padding: 0;
+}
+
+.messageText.bot ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.messageText.bot li {
+  margin-bottom: 5px;
+}
+
+.messageText.bot strong {
+  font-weight: bold;
+}
+
+.loadingDots {
+  display: flex;
+  gap: 5px;
+  position: relative;
+  font-size: 50px;
+  color: #58b423;
+  line-height: 40px;
+  top: -12px;
+  margin-left: 0.8rem;
+}
+
+@keyframes dots {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.loadingDots span {
+  animation: dots 1.5s infinite;
+}
+
+.loadingDots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loadingDots span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.loadingDots span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.fileUpload {
+  position: relative;
+}
+
+.fileInput {
+  display: none;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.fileName {
+  font-size: 14px;
+  color: #333;
+  flex-grow: 1;
+  word-wrap: break-word;
+  margin-right: 10px;
+}
+
+.fileNameContainer {
+  position: relative;
+  display: inline-block;
+  padding: 8px 30px 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  max-width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.removeFileButton {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+}
+
+.chatInput {
+  width: 100%;
+  padding: 10px 10px 0 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  resize: none;
+  max-height: 120px;
+  overflow-y: auto;
+
+  position: relative;
+}
+
+textarea:focus {
+  outline: none;
+  border: none;
+}
+
+textarea {
+  overflow: auto;
+  transition: max-height 0.3s ease;
+}
+
+textarea::placeholder {
+  color: #aaa;
+}
+
+.chatInputContainer .sendButton {
+  align-self: flex-end;
+}
+.fileAttachment {
+  display: flex;
+
+  align-items: flex-start;
+  background-color: #f1f1f1;
+  padding: 8px;
+  border-radius: 8px;
+
+  border: 1px solid #ddd;
+}
+
+.fileAttachment .fileIcon {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.fileAttachment span {
+  font-size: 14px;
+
+  color: black;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+@media (max-width: 1024px) {
+  .chatWindow {
+    width: 30rem;
+    min-height: 35rem;
+  }
+
+  .chatInputContainer {
+    padding: 2px 8px;
+  }
+
+  .chatInput {
+    font-size: 14px;
+  }
+
+  .sendButton {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chatWindow {
+    width: 25rem;
+    min-height: 35rem;
+    right: 5%;
+  }
+
+  .chatBubble {
+    margin-bottom: 10px;
+  }
+
+  .messageText {
+    font-size: 14px;
+  }
+
+  .chatInputContainer {
+    padding: 2px 6px;
+  }
+
+  .sendButton {
+    width: 34px;
+    height: 34px;
+  }
+
+  .chatButton {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatWindow {
+    width: 19rem;
+    min-height: 30rem;
+    right: 0;
+    bottom: 0;
+  }
+
+  .chatInput {
+    font-size: 13px;
+  }
+
+  .messageText {
+    max-width: 70%;
+  }
+
+  .chatButton {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+  }
+
+  .sendButton {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+@media (max-height: 800px) {
+  .chatWindow {
+    min-height: 28rem;
+  }
+}
