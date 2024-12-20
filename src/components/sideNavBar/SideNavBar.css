@@ -1,0 +1,111 @@
+.sideNav {
+  width: 30%;
+  /* display: flex; */
+  /* flex-direction: column; */
+  background-color: #f6f7f8;
+  color: black;
+  padding: 10px;
+  z-index: 10;
+  height: 100vh;
+  transition: transform 0.3s ease-in-out;
+}
+.sidebarHeader {
+  font-size: 20px;
+  padding: 8px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+.sidebarContent {
+  overflow-y: auto;
+}
+.sideNav.close {
+  transform: translateX(-100%);
+}
+
+.sideNav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sideNav li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sideNav li.active {
+  background-color: #cfd4d9;
+}
+
+.sideNav li:hover {
+  background-color: #dce0e4;
+}
+
+.searchIcon {
+  margin-right: 10px;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #52667a;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modalContent {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.modalContent button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modalContent button:first-of-type {
+  background-color: #52667a;
+  color: white;
+}
+
+.modalContent button:last-of-type {
+  background-color: #ccc;
+}
+
+@media (min-width: 1600px) {
+  .sideNav {
+    width: 20%;
+  }
+}
+@media (max-width: 767px) {
+  .sideNav {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sideNav {
+    width: 40%;
+  }
+}

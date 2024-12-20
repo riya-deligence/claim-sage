@@ -5,28 +5,28 @@ import "./Chat.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPaperPlane,
-  faCommentDots,
   faTimes,
   faPaperclip,
   faFile,
+  faUserCircle,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactMarkdown from "react-markdown";
+import SideNav from "./sideNavBar/SideNavBar";
 
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      text: "Hello! How can I assist you today? You can start by clicking on any option or typing your question below.",
-      sender: "bot",
-    },
-  ]);
+  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [hasStarted, setHasStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [rows, setRows] = useState(1);
+  const [threadId, setThreadId] = useState(null);
   const lastMessageRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const toggleChatbot = () => setIsOpen(!isOpen);
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleInputChange = (e) => {
     setInputMessage(e.target.value);
@@ -62,6 +62,7 @@ export default function Chatbot() {
 
     const formData = new FormData();
     formData.append("input", message);
+    formData.append("currentThread", threadId);
 
     if (file) {
       formData.append("file", file);
@@ -121,12 +122,54 @@ export default function Chatbot() {
     setFile(null);
   };
 
+  // console.log(threadId);
+
+  useEffect(() => {
+    setMessages([]);
+    async function threadChat() {
+      try {
+        if (threadId) {
+          const response = await fetch("/api/thread/getThreadChat", {
+            method: "POST",
+            body: threadId,
+          });
+
+          const data = await response.json();
+          // console.log(data);
+          setMessages(data);
+
+          setHasStarted(data.length > 0);
+          // console.log(data);
+        }
+      } catch (error) {
+        console.error("Error during the request", error);
+      }
+    }
+    threadChat();
+  }, [threadId]);
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const starterMessages = [
     "Can you review this policy and tell me if my claim is valid?",
     "What are my legal rights regarding property insurance?",
@@ -135,40 +178,55 @@ export default function Chatbot() {
   ];
 
   const calculateRows = () => {
-    if (inputMessage || file) {
-      return Math.min(Math.ceil(inputMessage.length / 30), 5);
+    if (inputRef.current && inputMessage) {
+      const maxRows = 5;
+      const inputElement = inputRef.current;
+
+      const fontSize = parseFloat(getComputedStyle(inputElement).fontSize);
+      const inputWidth = inputElement.offsetWidth;
+
+      const charsPerRow = Math.floor(inputWidth / (fontSize * 0.6));
+      const messageLength = inputMessage.length;
+
+      return Math.min(Math.ceil(messageLength / charsPerRow), maxRows);
     }
     return 1;
   };
 
+  useEffect(() => {
+    setRows(calculateRows());
+  }, [inputMessage]);
   const truncateFileName = (name) => {
     const maxLength = 40;
     return name.length > maxLength ? `${name.slice(0, maxLength)}...` : name;
   };
 
   return (
-    <div className={`chatbotContainer ${isOpen ? "open" : ""}`}>
-      <div className="chatButton" onClick={toggleChatbot}>
-        {isOpen ? (
-          <FontAwesomeIcon icon={faTimes} className="iconStyle" />
-        ) : (
-          <FontAwesomeIcon icon={faCommentDots} className="iconStyle" />
-        )}
-      </div>
-      {isOpen && (
-        <div className="chatWindow">
-          <div className="chatHeader">
-            <div className="headerContent">
-              <span className="chatTitle">Claim Sage</span>
-              <span className="chatSubtitle">
-                Your Property Insurance Expert for Pro-Consumer Advice
-              </span>
-            </div>
-            <button className="closeButton" onClick={toggleChatbot}>
-              ×
-            </button>
+    <div className="chatbotContainer">
+      {isOpen ? (
+        <SideNav
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          hasStarted={hasStarted}
+          setThreadId={setThreadId}
+          setHasStarted={setHasStarted}
+          // setMessages={setMessages}
+        />
+      ) : (
+        <button className="toggleSidebarButton" onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+      )}
+      <div className="chatWindow">
+        <div className="chatHeader">
+          <div className="headerContent">
+            <span className="chatTitle">Claim Sage</span>
           </div>
-
+          <button className="profileButton">
+            <FontAwesomeIcon icon={faUserCircle} />
+          </button>
+        </div>
+        <div className="chatContainer">
           <div className="chatBody">
             {messages.map((message, index) => (
               <div
@@ -230,60 +288,88 @@ export default function Chatbot() {
               </div>
             )}
             {!hasStarted && (
-              <div className="starterMessages">
-                {starterMessages.map((message, index) => (
-                  <button
-                    key={index}
-                    className="starterMessage"
-                    onClick={() => handleStarterMessageClick(message)}
-                  >
-                    {message}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="messageContainer">
+                  <div className="iconContainer">
+                    <img
+                      src="/images/logo-sage.png"
+                      alt="Bot Icon"
+                      className="botIcon"
+                    />
+                  </div>
+                  <div className="messageContent">
+                    <p>Claim Sage</p>
+                    <span className="botDescription">
+                      Expert property insurance advocate providing pro-consumer
+                      advice.
+                    </span>
+                    <div className="starterMessages">
+                      {starterMessages.map((message, index) => (
+                        <button
+                          key={index}
+                          className="starterMessage"
+                          onClick={() => handleStarterMessageClick(message)}
+                        >
+                          {message}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </div>
-          <div className="chatInputContainer">
-            <label className="fileUpload">
-              <FontAwesomeIcon icon={faPaperclip} className="fileUploadIcon" />
-              <input
-                type="file"
-                className="fileInput"
-                onChange={handleFileInputChange}
-              />
-            </label>
+          <div className={isOpen ? "sidebarOpen" : "sidebarClose"}>
+            <div className="chatInputContainer">
+              <div className="inputWrapper">
+                {file && (
+                  <div className="fileNameContainer">
+                    <span className="fileName">
+                      {truncateFileName(file.name)}
+                      <button
+                        className="removeFileButton"
+                        onClick={handleFileRemove}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </button>
+                    </span>
+                  </div>
+                )}
 
-            <div className="inputWrapper">
-              {file && (
-                <div className="fileNameContainer">
-                  <span className="fileName">
-                    {truncateFileName(file.name)}
-                    <button
-                      className="removeFileButton"
-                      onClick={handleFileRemove}
-                    >
-                      <FontAwesomeIcon icon={faTimes} />
-                    </button>
-                  </span>
-                </div>
-              )}
+                <textarea
+                  ref={inputRef}
+                  className="chatInput"
+                  placeholder="Message Claim Sage"
+                  value={inputMessage}
+                  onChange={handleInputChange}
+                  rows={rows}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                />
+              </div>
+              <div className="inputButtonWrapper">
+                <label className="fileUpload">
+                  <FontAwesomeIcon
+                    icon={faPaperclip}
+                    className="fileUploadIcon"
+                  />
+                  <input
+                    type="file"
+                    className="fileInput"
+                    onChange={handleFileInputChange}
+                  />
+                </label>
 
-              <textarea
-                className="chatInput"
-                placeholder="Message Claim Sage"
-                value={inputMessage}
-                onChange={handleInputChange}
-                rows={calculateRows()}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              />
+                <button className="sendButton" onClick={handleSendMessage}>
+                  <FontAwesomeIcon
+                    icon={faPaperPlane}
+                    className="sendArrowIcon"
+                  />
+                </button>
+              </div>
             </div>
-
-            <button className="sendButton" onClick={handleSendMessage}>
-              <FontAwesomeIcon icon={faPaperPlane} className="sendArrowIcon" />
-            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
