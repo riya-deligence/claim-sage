@@ -279,6 +279,7 @@ const SideNav = (props) => {
         <SearchModal
           isOpen={searchModal}
           onClose={handleModalClose}
+          setThreadId={props.setThreadId}
           threads={listItems} // Pass the updated listItems to the modal
         />
       )}

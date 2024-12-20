@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./SearchModal.css";
 
-const SearchModal = ({ isOpen, onClose, threads }) => {
+const SearchModal = ({ isOpen, onClose, threads, setThreadId }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredThreads = threads.filter((thread) =>
@@ -28,7 +28,14 @@ const SearchModal = ({ isOpen, onClose, threads }) => {
         <ul className="threads-list">
           {filteredThreads.length > 0 ? (
             filteredThreads.map((thread, index) => (
-              <li key={index} className="thread-item">
+              <li
+                key={index}
+                className="thread-item"
+                onClick={() => {
+                  setThreadId(thread.id);
+                  onClose();
+                }}
+              >
                 {thread.name}
               </li>
             ))
