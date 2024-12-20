@@ -15,7 +15,7 @@ import ReactMarkdown from "react-markdown";
 import SideNav from "./sideNavBar/SideNavBar";
 
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [hasStarted, setHasStarted] = useState(false);
@@ -122,6 +122,12 @@ export default function Chatbot() {
     setFile(null);
   };
 
+  useEffect(() => {
+    // Run this code only on the client side
+    if (typeof window !== "undefined") {
+      setIsOpen(window.innerWidth >= 768);
+    }
+  }, []);
   // console.log(threadId);
 
   useEffect(() => {
