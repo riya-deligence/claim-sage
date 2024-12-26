@@ -19,18 +19,14 @@ export default async function handler(req, res) {
     const messages = await openai.beta.threads.messages.list(threadId);
     const formattedMessages = messages.data
       .map((message) => {
-        //   console.log(message);
-        // console.log(message.content[0].text.value, "message");
         return {
           sender: message.role === "user" ? "user" : "bot",
-          text: message.content[0].text.value, // Access the `text` field
+          text: message.content[0].text.value,
+          isFile: message.attachments[0]?.file_id ? true : false,
+          fileName: message.metadata?.fileName,
         };
       })
       .reverse();
-
-    // Display messages
-    // console.log(formattedMessages);
-    // console.log(messages);
 
     res.status(200).json(formattedMessages);
   } catch (error) {

@@ -13,14 +13,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactMarkdown from "react-markdown";
 import SideNav from "./sideNavBar/SideNavBar";
+import DotLoader from "react-spinners/DotLoader";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [hasStarted, setHasStarted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(messages.length > 0);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
   const [file, setFile] = useState(null);
+  const [listItems, setListItems] = useState([]);
   const [rows, setRows] = useState(1);
   const [threadId, setThreadId] = useState(null);
   const lastMessageRef = useRef(null);
@@ -37,10 +41,23 @@ export default function Chatbot() {
     setMessages([...messages, { sender: "user", text: message }]);
     handleSendMessage(message);
   };
+  const fetchThreads = async () => {
+    try {
+      const response = await fetch("/api/thread/fetchThreads");
+
+      const threadsList = await response.json();
+      const threadListItems = threadsList.map((thread) => ({
+        id: thread.threadId,
+        name: thread.chatName,
+      }));
+      setListItems(threadListItems);
+    } catch (error) {
+      console.error("Error fetching threads:", error);
+    }
+  };
 
   const handleSendMessage = async (msg) => {
     setHasStarted(true);
-
     const API_URL = "/api/response";
     let message = msg;
 
@@ -48,9 +65,10 @@ export default function Chatbot() {
       setMessages((prevMessages) => [
         ...prevMessages,
         {
-          text: inputMessage.trim() || "[File Attached]",
+          text: inputMessage.trim(),
           sender: "user",
-          file: file ? file.name : null,
+          isFile: file ? true : false,
+          fileName: file ? file.name : null,
         },
       ]);
       setInputMessage("");
@@ -62,8 +80,22 @@ export default function Chatbot() {
 
     const formData = new FormData();
     formData.append("input", message);
-    formData.append("currentThread", threadId);
 
+    console.log(threadId);
+    if (threadId === null) {
+      const response = await fetch("/api/thread/createThread");
+
+      const newThread = await response.json();
+
+      setThreadId(newThread);
+
+      formData.append("currentThread", newThread);
+      formData.append("newChat", true);
+      await fetchThreads();
+    } else {
+      formData.append("currentThread", threadId);
+      formData.append("newChat", false);
+    }
     if (file) {
       formData.append("file", file);
     }
@@ -111,48 +143,43 @@ export default function Chatbot() {
     }
 
     setLoading(false);
+    await fetchThreads();
   };
 
   const handleFileInputChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
   };
+  async function threadChat(id) {
+    try {
+      if (id !== null) {
+        setFetching(true);
+        const response = await fetch("/api/thread/getThreadChat", {
+          method: "POST",
+          body: id,
+        });
 
+        const data = await response.json();
+
+        setMessages(data);
+
+        setHasStarted(data.length > 0);
+        setFetching(false);
+      }
+    } catch (error) {
+      console.error("Error during the request", error);
+    }
+  }
   const handleFileRemove = () => {
     setFile(null);
   };
 
   useEffect(() => {
-    // Run this code only on the client side
     if (typeof window !== "undefined") {
       setIsOpen(window.innerWidth >= 768);
     }
   }, []);
-  // console.log(threadId);
 
-  useEffect(() => {
-    setMessages([]);
-    async function threadChat() {
-      try {
-        if (threadId) {
-          const response = await fetch("/api/thread/getThreadChat", {
-            method: "POST",
-            body: threadId,
-          });
-
-          const data = await response.json();
-          // console.log(data);
-          setMessages(data);
-
-          setHasStarted(data.length > 0);
-          // console.log(data);
-        }
-      } catch (error) {
-        console.error("Error during the request", error);
-      }
-    }
-    threadChat();
-  }, [threadId]);
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
@@ -202,6 +229,15 @@ export default function Chatbot() {
   useEffect(() => {
     setRows(calculateRows());
   }, [inputMessage]);
+
+  useEffect(() => {
+    fetchThreads();
+  }, []);
+
+  useEffect(() => {
+    if (!hasStarted) setMessages([]);
+  }, [hasStarted]);
+
   const truncateFileName = (name) => {
     const maxLength = 40;
     return name.length > maxLength ? `${name.slice(0, maxLength)}...` : name;
@@ -213,10 +249,11 @@ export default function Chatbot() {
         <SideNav
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          hasStarted={hasStarted}
           setThreadId={setThreadId}
           setHasStarted={setHasStarted}
-          // setMessages={setMessages}
+          listItems={listItems}
+          fetchThreads={fetchThreads}
+          threadChat={threadChat}
         />
       ) : (
         <button className="toggleSidebarButton" onClick={toggleSidebar}>
@@ -233,98 +270,106 @@ export default function Chatbot() {
           </button>
         </div>
         <div className="chatContainer">
-          <div className="chatBody">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                ref={index === messages.length - 1 ? lastMessageRef : null}
-                className={`chatBubble ${
-                  message.sender === "user" ? "user" : "bot"
-                }`}
-              >
-                <div className="messageIconContainer">
-                  <img
-                    src={
-                      message.sender === "user"
-                        ? "/images/logo-user.png"
-                        : "/images/logo-sage.png"
-                    }
-                    alt={
-                      message.sender === "user"
-                        ? "User Icon"
-                        : "Claim Sage Logo"
-                    }
-                    className="messageIcon"
-                  />
-                </div>
+          {fetching ? (
+            <div className="loader">
+              <DotLoader color="#137cc4" size={40} />
+            </div>
+          ) : (
+            <div className="chatBody">
+              {messages.map((message, index) => (
                 <div
-                  className={`messageText ${
+                  key={index}
+                  ref={index === messages.length - 1 ? lastMessageRef : null}
+                  className={`chatBubble ${
                     message.sender === "user" ? "user" : "bot"
                   }`}
                 >
-                  {message.file && (
-                    <div className="fileAttachment">
-                      <FontAwesomeIcon icon={faFile} className="fileIcon" />
-                      <span>{message.file}</span>
-                    </div>
-                  )}
-                  {message.sender === "bot" ? (
-                    <ReactMarkdown>{message.text}</ReactMarkdown>
-                  ) : (
-                    <span>{message.text}</span>
-                  )}
+                  <div className="messageIconContainer">
+                    <img
+                      src={
+                        message.sender === "user"
+                          ? "/images/logo-user.png"
+                          : "/images/logo-sage.png"
+                      }
+                      alt={
+                        message.sender === "user"
+                          ? "User Icon"
+                          : "Claim Sage Logo"
+                      }
+                      className="messageIcon"
+                    />
+                  </div>
+                  <div
+                    className={`messageText ${
+                      message.sender === "user" ? "user" : "bot"
+                    }`}
+                  >
+                    {message.sender === "bot" ? (
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
+                    ) : message.isFile === true ? (
+                      <>
+                        <div className="fileAttachment">
+                          <FontAwesomeIcon icon={faFile} className="fileIcon" />
+                          <span>{message.fileName}</span>
+                        </div>
+                        {message.text !== null && <span>{message.text}</span>}
+                      </>
+                    ) : (
+                      <span>{message.text}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {loading && (
-              <div className="chatBubble bot" ref={lastMessageRef}>
-                <div className="messageIconContainer">
-                  <img
-                    src="/images/logo-sage.png"
-                    alt="Bot Icon"
-                    className="messageIcon"
-                  />
-                </div>
-                <div className="loadingDots">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
-                </div>
-              </div>
-            )}
-            {!hasStarted && (
-              <>
-                <div className="messageContainer">
-                  <div className="iconContainer">
+              {loading && (
+                <div className="chatBubble bot" ref={lastMessageRef}>
+                  <div className="messageIconContainer">
                     <img
                       src="/images/logo-sage.png"
                       alt="Bot Icon"
-                      className="botIcon"
+                      className="messageIcon"
                     />
                   </div>
-                  <div className="messageContent">
-                    <p>Claim Sage</p>
-                    <span className="botDescription">
-                      Expert property insurance advocate providing pro-consumer
-                      advice.
-                    </span>
-                    <div className="starterMessages">
-                      {starterMessages.map((message, index) => (
-                        <button
-                          key={index}
-                          className="starterMessage"
-                          onClick={() => handleStarterMessageClick(message)}
-                        >
-                          {message}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="loadingDots">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
                   </div>
                 </div>
-              </>
-            )}
-          </div>
+              )}
+              {!hasStarted && (
+                <>
+                  <div className="messageContainer">
+                    <div className="iconContainer">
+                      <img
+                        src="/images/logo-sage.png"
+                        alt="Bot Icon"
+                        className="botIcon"
+                      />
+                    </div>
+                    <div className="messageContent">
+                      <p>Claim Sage</p>
+                      <span className="botDescription">
+                        Expert property insurance advocate providing
+                        pro-consumer advice.
+                      </span>
+                      <div className="starterMessages">
+                        {starterMessages.map((message, index) => (
+                          <button
+                            key={index}
+                            className="starterMessage"
+                            onClick={() => handleStarterMessageClick(message)}
+                          >
+                            {message}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           <div className={isOpen ? "sidebarOpen" : "sidebarClose"}>
             <div className="chatInputContainer">
               <div className="inputWrapper">

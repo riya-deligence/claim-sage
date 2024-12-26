@@ -1,66 +1,60 @@
-/* Modal Overlay */
 .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-overlay.show {
-    display: flex;
-  }
-  
-  /* Modal Content */
-  .modal-content {
-    background: white;
-    padding: 20px;
-    width: 400px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-  }
-  
-  /* Close Button */
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  
-  /* Search Input */
-  .search-input {
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  /* Threads List */
-  .threads-list {
-    list-style: none;
-    padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  .thread-item {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-  }
-  
-  .thread-item:hover {
-    background: #f5f5f5;
-  }
-  
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.search-input {
+  width: 90%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.threads-list {
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.thread-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.thread-item:hover {
+  background: #f5f5f5;
+}
